@@ -1,4 +1,3 @@
-#include "env.h"
 #include "telegram.h"
 
 void configInitCamera(){

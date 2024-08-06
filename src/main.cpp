@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "env.h" 
 #include "telegram.h"
+#include "webserver.h"
 
 void setup(){
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
@@ -27,7 +28,9 @@ void setup(){
   }
   Serial.println();
   Serial.print("ESP32-CAM IP Address: ");
-  Serial.println(WiFi.localIP()); 
+  Serial.println(WiFi.localIP());
+  setupServer();
+  server.begin(); 
 }
 
 void loop() {

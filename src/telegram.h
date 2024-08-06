@@ -2,6 +2,7 @@
 #define TELEGRAM_H
 
 #include <Arduino.h>
+#include "env.h"
 
 void configInitCamera();
 

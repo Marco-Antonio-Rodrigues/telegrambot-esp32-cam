@@ -1,5 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,platformio,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,platformio,c++
+###project
+.env
 
 ### C++ ###
 # Prerequisites
