@@ -8,6 +8,8 @@ void configInitCamera();
 
 void handleNewMessages(int numNewMessages);
 
+void loop_poll_bot();
+
 String sendPhotoTelegram();
 
 #endif
