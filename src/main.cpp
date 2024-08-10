@@ -24,7 +24,9 @@ void saveConfigCallback () {
 void setup(){
   Serial.begin(115200);
   Serial.println();
-    
+  
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+  
   // Desativa a proteção de brown-out
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 
@@ -38,20 +40,8 @@ void setup(){
 
   clientTCP.setCACert(TELEGRAM_CERTIFICATE_ROOT); // Add root certificate for api.telegram.org
 
-  wifiManager.autoConnect();
-  if (WiFi.status()!= WL_CONNECTED) {
-    Serial.println("Abertura Portal"); //Abre o portal
-    wifiManager.resetSettings();       //Apaga rede salva anteriormente
-    if(!wifiManager.startConfigPortal("ESP32-CONFIG", "12345678") ){ //Nome da Rede e Senha gerada pela ESP
-      Serial.println("Falha ao conectar"); //Se caso não conectar na rede mostra mensagem de falha
-      delay(2000);
-      ESP.restart(); //Reinicia ESP após não conseguir conexão na rede
-    }
-    else{       //Se caso conectar 
-      Serial.println("Conectado na Rede!!!");
-      ESP.restart(); //Reinicia ESP após conseguir conexão na rede 
-    }
-  }
+  wifiManager.autoConnect(wifiManager.getDefaultAPName().c_str(),"12345678");
+
   if (MDNS.begin("esp32")) {
     Serial.println("MDNS responder started");
   }
@@ -61,12 +51,11 @@ void setup(){
  
 void loop() {
    if(WiFi.status()== WL_CONNECTED){ //Se conectado na rede
-      // Serial.println("Conectado");
+      server.handleClient();
+      loop_poll_bot();
    }
    else{ //se não conectado na rede
       Serial.println("Conexão perdida, tentando reconectar...");
-      wifiManager.autoConnect();//Função para se autoconectar na rede
+      wifiManager.autoConnect(wifiManager.getDefaultAPName().c_str(),"12345678");
    }
-   server.handleClient();
-   loop_poll_bot();
 }

@@ -49,4 +49,6 @@ extern unsigned long lastTimeBotRan;
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+void configInitCamera();
+
 #endif
