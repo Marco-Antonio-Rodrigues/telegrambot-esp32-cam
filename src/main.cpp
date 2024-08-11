@@ -5,6 +5,8 @@
 #include "router.h"
 #include "env.h" 
 #include "telegram.h"
+#include "managerUsers.h"
+
 
 WiFiManager wifiManager;//Objeto de manipulação do wi-fi
 String header;
@@ -24,7 +26,9 @@ void saveConfigCallback () {
 void setup(){
   Serial.begin(115200);
   Serial.println();
-  
+    
+  initLittleFS();//init managerFile
+
   WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
   
   // Desativa a proteção de brown-out

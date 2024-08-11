@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de IDs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0px;
+        }
+        header {
+            background-color: #007bff;
+            display: flex;
+            width: 100%;
+            padding: 10px;
+        }
+        main {
+            margin: 20px;
+        }
+        h1 {
+            color: #f4f4f4;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        input[type="submit"] {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #f4f4f4;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gerenciamento de IDs de Usuários</h1>
+    </header>
+    <main>
+        <form id="addUserForm">
+            <input type="text" id="userID" placeholder="Digite o ID do usuário" required>
+            <input type="submit" value="Adicionar ID">
+        </form>
+        <h2>IDs Cadastrados</h2>
+        <ul id="userList"></ul>
+        
+        <script>
+        function loadUserIDs() {
+            fetch('/get_users')
+                .then(response => response.json())
+                .then(data => {
+                    const userList = document.getElementById('userList');
+                    userList.innerHTML = '';
+                    data.forEach(id => {
+                        addUserToList(id);
+                    });
+                });
+        }
+
+        function addUserToList(id) {
+            const userList = document.getElementById('userList');
+            const li = document.createElement('li');
+            li.textContent = id;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remover';
+            removeButton.onclick = () => removeUser(id, li);
+
+            li.appendChild(removeButton);
+            userList.appendChild(li);
+        }
+
+        function removeUser(id, listItem) {
+            fetch(`/remove_user?id=${encodeURIComponent(id)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).then(response => {
+                if (response.ok) {
+                    listItem.remove();
+                } else {
+                    alert('Falha ao remover ID');
+                }
+            });
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userID = document.getElementById('userID').value;
+            fetch(`/add_user?id=${encodeURIComponent(userID)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).then(response => {
+                if (response.ok) {
+                    addUserToList(userID);
+                    document.getElementById('userID').value = '';
+                } else {
+                    alert('Falha ao adicionar ID');
+                }
+            });
+        });
+
+        window.onload = loadUserIDs;
+        </script>
+    </main>
+</body>
+</html>

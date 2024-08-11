@@ -11,18 +11,12 @@
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
 
-// Credenciais WiFi e configurações do bot
-extern const char* ssid;
-extern const char* password;
+// configurações do bot
 extern String BOTtoken;
-extern String CHAT_ID;
 
 // Declarações para objetos globais
 extern WiFiClientSecure clientTCP;
 extern UniversalTelegramBot bot;
-
-// Variáveis e definições de configuração
-extern bool sendPhoto;
 
 #define FLASH_LED_PIN 4
 extern bool flashState;

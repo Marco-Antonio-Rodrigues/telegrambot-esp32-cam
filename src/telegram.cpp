@@ -1,42 +1,8 @@
 #include "telegram.h"
 
-void handleNewMessages(int numNewMessages) {
-  Serial.print("Handle New Messages: ");
-  Serial.println(numNewMessages);
+std::queue<String> photoRequestQueue;
 
-  for (int i = 0; i < numNewMessages; i++) {
-    String chat_id = String(bot.messages[i].chat_id);
-    if (chat_id != CHAT_ID){
-      bot.sendMessage(chat_id, "Unauthorized user", "");
-      continue;
-    }
-    
-    String text = bot.messages[i].text;
-    
-    String from_name = bot.messages[i].from_name;
-    if (text == "/start") {
-      String welcome = "Welcome , " + from_name + "\n";
-      welcome += "Use os seguinte comandos para interagir com o ESP32-CAM \n";
-      welcome += "/photo : Tirar um foto\n";
-      welcome += "/flash : Alterar estado do LED\n";
-      welcome += "\nAcesse o admin em:\n";
-      welcome += "opção 1: http://esp32.local\n";
-      welcome += "opção 2: http://192.168.0.102\n";
-      bot.sendMessage(CHAT_ID, welcome, "");
-    }
-    if (text == "/flash") {
-      flashState = !flashState;
-      digitalWrite(FLASH_LED_PIN, flashState);
-      Serial.println("Change flash LED state");
-    }
-    if (text == "/photo") {
-      sendPhoto = true;
-      Serial.println("New photo request");
-    }
-  }
-}
-
-String sendPhotoTelegram() {
+String sendPhotoTelegram(String chatId) {
   const char* myDomain = "api.telegram.org";
   String getAll = "";
   String getBody = "";
@@ -62,7 +28,7 @@ String sendPhotoTelegram() {
   if (clientTCP.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    String head = "--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + CHAT_ID + "\r\n--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String head = "--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chatId + "\r\n--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--RandomNerdTutorials--\r\n";
 
     size_t imageLen = fb->len;
@@ -114,7 +80,6 @@ String sendPhotoTelegram() {
       if (getBody.length()>0) break;
     }
     clientTCP.stop();
-    Serial.println(getBody);
   }
   else {
     getBody="Connected to api.telegram.org failed.";
@@ -123,11 +88,67 @@ String sendPhotoTelegram() {
   return getBody;
 }
 
+void handleNewMessages(int numNewMessages) {
+  Serial.print("Handle New Messages: ");
+  Serial.println(numNewMessages);
+
+  for (int i = 0; i < numNewMessages; i++) {
+    String chat_id = String(bot.messages[i].chat_id);
+
+    bool authorized = false;
+
+    File file = LittleFS.open(usersFile, "r");
+    if (!file) {
+        bot.sendMessage(chat_id, "Erro ao abrir arquivo", "");
+        return;
+    }
+
+    while (file.available()) {
+        String line = file.readStringUntil('\n');
+        line.trim();  // Remove espaços em branco e quebras de linha
+
+        if (line == chat_id) {
+            authorized = true;
+            break;
+        }
+    }
+    file.close();
+
+    if (!authorized) {
+        bot.sendMessage(chat_id, "Usuário não autorizado", "");
+        continue;
+    }
+
+    String text = bot.messages[i].text;
+    
+    String from_name = bot.messages[i].from_name;
+    if (text == "/start") {
+      String welcome = "Welcome , " + from_name + "\n";
+      welcome += "Use os seguinte comandos para interagir com o ESP32-CAM \n";
+      welcome += "/photo : Tirar um foto\n";
+      welcome += "/flash : Alterar estado do LED\n";
+      welcome += "\nAcesse o admin em:\n";
+      welcome += "opção 1: http://esp32.local\n";
+      welcome += "opção 2: http://192.168.0.102\n";
+      bot.sendMessage(chat_id, welcome, "");
+    }
+    if (text == "/flash") {
+      flashState = !flashState;
+      digitalWrite(FLASH_LED_PIN, flashState);
+      Serial.println("Change flash LED state");
+    }
+    if (text == "/photo") {
+        photoRequestQueue.push(chat_id);
+        Serial.println("New photo request from: "+ chat_id);
+    }
+  }
+}
+
 void loop_poll_bot(){
-  if (sendPhoto) {
-    Serial.println("Preparing photo");
-    sendPhotoTelegram(); 
-    sendPhoto = false; 
+  if (!photoRequestQueue.empty()) {
+      Serial.println("Preparing photo for: " + photoRequestQueue.front());
+      sendPhotoTelegram(photoRequestQueue.front());
+      photoRequestQueue.pop();
   }
   if (millis() > lastTimeBotRan + botRequestDelay)  {
     int numNewMessages = bot.getUpdates(bot.last_message_received + 1);

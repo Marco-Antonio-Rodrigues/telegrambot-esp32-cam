@@ -2,6 +2,7 @@
 #define MYSERVER_H
 
 #include <WebServer.h>
+#include "managerUsers.h"
 
 extern WebServer server;
 
