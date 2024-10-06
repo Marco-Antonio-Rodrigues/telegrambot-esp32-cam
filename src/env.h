@@ -21,6 +21,11 @@ extern UniversalTelegramBot bot;
 #define FLASH_LED_PIN 4
 extern bool flashState;
 
+extern bool modePresenceIsActive;
+extern int pinoPIR; //PINO DIGITAL UTILIZADO PELO SENSOR
+extern String chatId; //Chat para enviar as fotos quando o sensor está ativado. 
+
+
 extern int botRequestDelay;
 extern unsigned long lastTimeBotRan;
 

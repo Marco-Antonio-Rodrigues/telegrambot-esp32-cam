@@ -8,6 +8,10 @@ UniversalTelegramBot bot(BOTtoken, clientTCP);
 
 bool flashState = LOW;
 
+bool modePresenceIsActive = 1;
+int pinoPIR = 12;
+String chatId = "cole_aqui";
+
 int botRequestDelay = 1000;
 unsigned long lastTimeBotRan = 0;
 

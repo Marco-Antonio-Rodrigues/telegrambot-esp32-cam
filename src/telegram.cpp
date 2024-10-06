@@ -127,6 +127,7 @@ void handleNewMessages(int numNewMessages) {
       welcome += "Use os seguinte comandos para interagir com o ESP32-CAM \n";
       welcome += "/photo : Tirar um foto\n";
       welcome += "/flash : Alterar estado do LED\n";
+      welcome += "/presence : Alterar estado do sensor de presença\n";
       welcome += "\nAcesse o admin em:\n";
       welcome += "opção 1: http://esp32.local\n";
       welcome += "opção 2: http://192.168.0.102\n";
@@ -141,6 +142,11 @@ void handleNewMessages(int numNewMessages) {
         photoRequestQueue.push(chat_id);
         Serial.println("New photo request from: "+ chat_id);
     }
+    if (text == "/presence") {
+        modePresenceIsActive = !modePresenceIsActive;
+        Serial.println("Change mode presence state");
+    }
+    
   }
 }
 
@@ -149,6 +155,9 @@ void loop_poll_bot(){
       Serial.println("Preparing photo for: " + photoRequestQueue.front());
       sendPhotoTelegram(photoRequestQueue.front());
       photoRequestQueue.pop();
+  }
+  if (modePresenceIsActive && (digitalRead(pinoPIR) == HIGH)) {
+      photoRequestQueue.push(chatId);
   }
   if (millis() > lastTimeBotRan + botRequestDelay)  {
     int numNewMessages = bot.getUpdates(bot.last_message_received + 1);

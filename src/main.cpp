@@ -25,7 +25,7 @@ void saveConfigCallback () {
 
 void setup(){
   Serial.begin(115200);
-  Serial.println();
+  pinMode(FLASH_LED_PIN, OUTPUT); 
     
   initLittleFS();//init managerFile
 
