@@ -7,9 +7,13 @@
 #include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
 #include <WebServer.h>
+#include <WiFiManager.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
+
+
+extern WiFiManager wifiManager;//Objeto de manipulação do wi-fi
 
 // configurações do bot
 extern String BOTtoken;

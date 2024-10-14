@@ -1,15 +1,10 @@
 #include <HTTPClient.h>
 #include <DNSServer.h> 
-#include <WiFiManager.h>
 #include <ESPmDNS.h>
 #include "router.h"
 #include "env.h" 
 #include "telegram.h"
 #include "managerUsers.h"
-
-
-WiFiManager wifiManager;//Objeto de manipulação do wi-fi
-String header;
 
 //callback que indica que o ESP entrou no modo AP
 void configModeCallback (WiFiManager *myWiFiManager) {  

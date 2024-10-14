@@ -130,7 +130,7 @@ void handleNewMessages(int numNewMessages) {
       welcome += "/presence : Alterar estado do sensor de presença\n";
       welcome += "\nAcesse o admin em:\n";
       welcome += "opção 1: http://esp32.local\n";
-      welcome += "opção 2: http://192.168.0.102\n";
+      welcome += "opção 2: http://"+ WiFi.localIP().toString() + "\n";
       bot.sendMessage(chat_id, welcome, "");
     }
     if (text == "/flash") {

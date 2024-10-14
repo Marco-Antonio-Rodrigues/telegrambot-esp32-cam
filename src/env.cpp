@@ -3,6 +3,8 @@
 
 String BOTtoken = "cole_aqui";
 
+WiFiManager wifiManager;//Objeto de manipulação do wi-fi
+
 WiFiClientSecure clientTCP;
 UniversalTelegramBot bot(BOTtoken, clientTCP);
 
