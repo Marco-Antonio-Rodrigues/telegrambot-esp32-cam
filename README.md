@@ -2,6 +2,8 @@
 
 This project uses an ESP32-CAM module, a PIR motion sensor, and a Telegram bot to create a motion-activated photo capture system, allowing for remote monitoring of environments.
 
+![Descrição da imagem](./images/esp32-cam_1.jpg)
+
 ## Components Used
 
 - **ESP32-CAM**: A camera module based on the ESP32, equipped with a 2MP OV2640 camera, Wi-Fi and Bluetooth support, and a microSD card slot.
