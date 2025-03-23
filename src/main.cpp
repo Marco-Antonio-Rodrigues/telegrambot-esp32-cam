@@ -37,6 +37,13 @@ void setup(){
   // Config and init the camera
   configInitCamera();
 
+  sensor_t *s = esp_camera_sensor_get();
+  if (s) {
+      s->set_hmirror(s, 1); // Espelha a imagem na horizontal
+      s->set_vflip(s, 1);   // Espelha a imagem na vertical
+  }
+
+
   //callback para quando entra em modo de configuração AP
   wifiManager.setAPCallback(configModeCallback); 
   //callback para quando se conecta em uma rede, ou seja, quando passa a trabalhar em modo estação

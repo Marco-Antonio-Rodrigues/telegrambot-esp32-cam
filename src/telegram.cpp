@@ -156,7 +156,7 @@ void loop_poll_bot(){
       sendPhotoTelegram(photoRequestQueue.front());
       photoRequestQueue.pop();
   }
-  if (modePresenceIsActive && (digitalRead(pinoPIR) == HIGH) && photoRequestQueue.size() < 10) {
+  if (modePresenceIsActive && (digitalRead(pinoPIR) == HIGH) && photoRequestQueue.size() < 5) {
       photoRequestQueue.push(chatId);
   }
   if (millis() > lastTimeBotRan + botRequestDelay)  {
