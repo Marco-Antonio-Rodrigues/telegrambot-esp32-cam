@@ -49,6 +49,12 @@ void configInitCamera(){
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
   }
+
+  sensor_t *s = esp_camera_sensor_get();
+  if (s) {
+      s->set_hmirror(s, 1); // Espelha a imagem na horizontal
+      s->set_vflip(s, 1);   // Espelha a imagem na vertical
+  }
   
   // camera init
   esp_err_t err = esp_camera_init(&config);
